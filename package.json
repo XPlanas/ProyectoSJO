@@ -1,0 +1,19 @@
+{
+  "name": "real",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "npx vite"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "vite": "^6.0.3"
+  },
+  "dependencies": {
+    "@microsoft/signalr": "^8.0.7",
+    "chart.js": "^4.4.7"
+  }
+}
