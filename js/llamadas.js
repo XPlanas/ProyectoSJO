@@ -3,7 +3,15 @@
 import { formatCurrency, animateNumber, formatPercentage } from "./utils";
 
 export const getDataAsync = async () => {
-    const ventasResponse = await fetch("https://pruebasjo.polarier.com:501/api/Venta");
+
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0'); // Months are 0-based, so add 1
+    const firstDayOfMonth = `${year}-${month}-01`;
+    const lastDayOfMonth = `${year}-${month}-${new Date(year, month, 0).getDate()}`; // Get the last day of the month
+    
+    const ventasResponse = await fetch(`https://pruebasjo.polarier.com:501/api/Venta?fechaDesde=${firstDayOfMonth}&fechaHasta=${lastDayOfMonth}`);
+
     const productosResponse = await fetch("https://pruebasjo.polarier.com:501/api/Producto");
     const categoriasResponse = await fetch("https://pruebasjo.polarier.com:501/api/Categoria");
 
@@ -40,8 +48,10 @@ export const UpdateData = async (alldata) => {
     DisplayData(percentage, document.getElementById("ventasPercentageField"), formatPercentage, true);
     if (percentage < 0) {
         document.getElementById("ventasPercentageField").style.color = "red";
+    } else{
+        document.getElementById("ventasPercentageField").style.color = "";
     }
-
+    SaleschartsByrevenue(productosData,ventasData)
     monthProductHistory(productosData, ventasData)
 }
 
@@ -96,6 +106,51 @@ const TodaySales = (productosData, ventasData, todayDate) => {
     return totalRevenue;
 }
 
+const SaleschartsByrevenue = (productosData, ventasData) => {
+    const ctx = document.getElementById('incomeChart').getContext('2d');
+    const days = [];
+    const salesData = []; // Array to hold sales data for each day
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0'); // Months are 0-based, so add 1
+    const lastDay = new Date().getDate();
+
+    for (let day = 1; day <= lastDay; day++) {
+        const formattedDay = String(day).padStart(2, '0'); // Pad single digits with a leading zero
+        const formattedMonth = String(month).padStart(2, '0'); // Months are 0-based, so add 1
+        days.push(`${formattedDay}/${formattedMonth}`);
+
+        // Calculate sales for this day
+        const currentDate = `${year}-${month}-${formattedDay}`;
+        const dailySales = TodaySales(productosData, ventasData, currentDate);
+        salesData.push(dailySales); // Store the sales amount for this day
+    }
+    
+    const myBarChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: days, // Example labels
+            datasets: [{
+                label: 'Sales',
+                data: salesData, // Use the calculated sales data
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+    return myBarChart;
+}
+
+// tabla hystorial ventas 
 const monthProductHistory = (productosData, ventasData) => {
     const today = new Date();
     const currentMonth = today.getMonth(); // 0-11

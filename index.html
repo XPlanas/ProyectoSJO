@@ -81,30 +81,7 @@
         </div>
     
        </body>
-<script>
-    const ctx = document.getElementById('incomeChart').getContext('2d');
-    const myBarChart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'], // Example labels
-            datasets: [{
-                label: 'Sales',
-                data: [12, 19, 3, 5], // Example data
-                backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                borderColor: 'rgba(75, 192, 192, 1)',
-                borderWidth: 1
-            }]
-        },
-        options: {
-            scales: {
-                y: {
-                    beginAtZero: true
-                }
-            }
-        }
-    });
-
-
+<script>    
     //pie chart
     const ctx2 = document.getElementById('myPieChart').getContext('2d');
     const myPieChart = new Chart(ctx2, {
